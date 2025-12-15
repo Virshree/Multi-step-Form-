@@ -1,6 +1,6 @@
 import React from "react";
 
-function PickAddOns({ goBack, goToNext, isYearly }) {
+function PickAddOns({ goBack, goToNext, isYearly,online,setOnline,profile,setProfile,storage,setStorage }) {
   return (
     <div className="mt-7 flex flex-col">
       <h1 className="text-3xl font-bold mb-2">Pick add-ons</h1>
@@ -14,7 +14,8 @@ function PickAddOns({ goBack, goToNext, isYearly }) {
       cursor-pointer rounded-2xl hover:border-blue-800
      "
       >
-        <input type="checkbox" className="ml-[20px] scale-150  mt-[25px]" />
+        <input type="checkbox"   checked={online}
+  onChange={() => setOnline(!online)}className="ml-[20px] scale-150  mt-[25px]" />
         <div className="flex justify-between  ml-[70px] mt-[-30px]">
           <div className="flex flex-col">
             <h3 className="font-bold ">Online service</h3>
@@ -34,7 +35,8 @@ function PickAddOns({ goBack, goToNext, isYearly }) {
       cursor-pointer rounded-2xl 
       hover:border-blue-900"
       >
-        <input type="checkbox" className="ml-[20px] scale-150  mt-[25px]" />
+        <input type="checkbox"  checked={storage}
+  onChange={() => setStorage(!storage)} className="ml-[20px] scale-150  mt-[25px]" />
         <div className="flex justify-between ml-[70px] mt-[-30px]">
           <div className="flex flex-col">
             <h3 className="font-bold ">Larger storage</h3>
@@ -53,7 +55,8 @@ function PickAddOns({ goBack, goToNext, isYearly }) {
       cursor-pointer rounded-2xl 
       hover:border-blue-900"
       >
-        <input type="checkbox" className="ml-[20px] scale-150  mt-[25px]" />
+        <input type="checkbox"  checked={profile}
+  onChange={() => setProfile(!profile)} className="ml-[20px] scale-150  mt-[25px]" />
         <div className="flex justify-between ml-[70px] mt-[-30px]">
           <div className="flex flex-col">
             <h3 className="font-bold ">Customizable profile</h3>
