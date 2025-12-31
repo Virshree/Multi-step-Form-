@@ -1,121 +1,143 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function PersonalInfo({ goToNext }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const [errors, setErrors] = useState({});
+  // Step 1: Consolidate form data into a single state object
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [errors, setErrors] = useState({});
+  // 👇 Load saved data when component mounts
+  useEffect(() => {
+    setName(localStorage.getItem("name") || "");
+    setEmail(localStorage.getItem("email") || "");
+    setPhone(localStorage.getItem("phone") || "");
+  }, []);
+
+  // Step 2: Validate the form and save to localStorage
   const handleNext = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "This field is required";
+    // Validation
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!email.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Enter a valid email";
     }
-    if (!formData.email.trim()) {
-      newErrors.email = "This field is required";
-    }
-    if (!formData.phone.trim()) {
-      newErrors.phone = "This field is required";
-    }
-    setErrors(newErrors);
+    if (!phone.trim()) newErrors.phone = "Phone number is required";
+
+    // If there are no errors, proceed to the next step
     if (Object.keys(newErrors).length === 0) {
+      localStorage.setItem("name", name);
+      localStorage.setItem("email", email);
+
+      localStorage.setItem("phone", phone);
+      // clear after navigation
+      setName("");
+      setEmail("");
+      setPhone("");
+      setErrors({}); // Clear errors if everything is valid
+      // Trigger the next step
       goToNext();
+    } else {
+      setErrors(newErrors); // Set validation errors
     }
   };
+  useEffect(() => {
+    const handleRefresh = () => {
+      localStorage.removeItem("name");
+      localStorage.removeItem("email");
+      localStorage.removeItem("phone");
+    };
+    window.addEventListener("beforeunload", handleRefresh);
+
+    return () => {
+      window.addEventListener("beforeunload", handleRefresh);
+    };
+  }, []);
   return (
-    <div className="">
-      {/* Content */}
-      <div className="flex-1 ">
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">
-          Personal info
-        </h1>
-        <p className="text-slate-500 mb-6">
-          Please provide your name, email address, and phone number.
-        </p>
+    <div className=" flex justify-center absolute  top-20 sm:relative sm:top-0">
+          <div className=" bg-white m-auto p-6 rounded-xl w-[90%] sm:bg-transparent sm:shadow-none sm:w-md  ">
+      <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">
+        Personal info
+      </h1>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between  max-w-[400px]">
-            <label className="text-md font-medium text-slate-700">Name</label>
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
-            )}
-          </div>
+      <p className="text-slate-500 mb-6 text-md md:text-base">
+        Please provide your name, email address, and phone number. 
+      </p>
 
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="e.g. Stephen King"
-            className={`w-full max-w-[400px] rounded-md px-3 py-2
-              ${errors.email ? "border-red-500" : "border-slate-300"}
-              border focus:outline focus:ring-2 focus:ring-blue-500`}
-          />
-          <div className="flex justify-between  max-w-[400px]">
-            <label className="text-md font-medium text-slate-700 mt-3 ">
-              Email Address
-            </label>
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-3">{errors.email}</p>
-            )}
-          </div>
-
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="e.g.stephenking@lorem.com"
-            className={`w-full max-w-[400px] rounded-md px-3 py-2
-              ${errors.email ? "border-red-500" : "border-slate-300"}
-              border focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          />
-
-          <div className="flex justify-between  max-w-[400px]">
-            <label className="text-md font-medium text-slate-700 mt-3">
-              Phone Number
-            </label>
-            {errors.phone && (
-              <p className="text-red-500 text-sm mt-3">{errors.phone}</p>
-            )}
-          </div>
-
-          <input
-            type="number"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="e.g. +1 234 567 890"
-            className={`w-full max-w-[400px] rounded-md px-3 py-2
-              ${errors.email ? "border-red-500" : "border-slate-300"}
-              border focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          />
-
-          <div className="flex justify-end mt-32">
-            <button
-              className="
-    bg-blue-950
-    text-white
-    px-6 py-3
-    cursor-pointer
-    rounded-md
-    font-medium
-    hover:bg-blue-900
-    transition
-  "
-              onClick={handleNext}
-            >
-              Next Step
-            </button>
-          </div>
+      <form className="space-y-4">
+        {/* Name */}
+        <div className="flex justify-between">
+          <label className="text-sm font-medium text-slate-700">Name</label>
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
         </div>
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Stephen King"
+          className={`w-full rounded-md px-3 py-2 border ${
+            errors.name ? "border-red-500" : "border-slate-300"
+          } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        />
+
+        {/* Email */}
+        <div className="flex justify-between">
+          <label className="text-sm font-medium text-slate-700">
+            Email Address
+          </label>
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email}</p>
+          )}
+        </div>
+        <input
+          type="email"
+          name="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="e.g. stephenking@lorem.com"
+          className={`w-full rounded-md px-3 py-2 border ${
+            errors.email ? "border-red-500" : "border-slate-300"
+          } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        />
+
+        {/* Phone */}
+        <div className="flex justify-between">
+          <label className="text-sm font-medium text-slate-700">
+            Phone Number
+          </label>
+          {errors.phone && (
+            <p className="text-red-500 text-sm">{errors.phone}</p>
+          )}
+        </div>
+        <input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(e) => {
+            const v = e.target.value.replace(/\D/g, "");
+            if (v.length <= 10) setPhone(v);
+          }}
+          placeholder="e.g. +1 234 567 890"
+          className={`w-full rounded-md px-3 py-2 border ${
+            errors.phone ? "border-red-500" : "border-slate-300"
+          } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        />
+      </form>
+
+      {/* Button */}
+      <div className="fixed bottom-0 left-0 w-full bg-white px-9 mt-[95px] py-4 md:static md:bg-transparent md:px-0 md:py-0 flex justify-end">
+        <button
+          onClick={handleNext}
+          className="bg-blue-950 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-900 transition cursor-pointer"
+        >
+          Next Step
+        </button>
       </div>
+  </div>
     </div>
   );
 }

@@ -17,8 +17,8 @@ const [profile, setProfile] = useState(false);
 
   return (
     <>
-      <div className="bg-[hsl(218_100%_97%)] min-h-screen flex items-center justify-center">
-        <div className="bg-white flex gap-8 w-full max-w-[880px] rounded-xl shadow-md p-6">
+      <div className="  relative h-screen bg-[hsl(218_100%_97%)] flex md:items-center justify-center  rounded-xl ">
+        <div className="w-full md:max-w-[900px] md:bg-white md:flex md:gap-8 md:rounded-xl md:shadow-md md:p-5">
           {/* STATIC SIDEBAR */}
           <Sidebar step={step} />
 
